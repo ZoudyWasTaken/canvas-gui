@@ -183,6 +183,8 @@ define("index", ["require", "exports", "Elements/Button", "Elements/Text"], func
         registerElement(Button_1["default"], "Pizza time!", 100, 75 * 2, 125, 25),
         registerElement(Text_1["default"], "TEXT", 500, 500)
     ];
+    window['Button'] = Button_1["default"];
+    window['Text'] = Text_1["default"];
     window['getButtonById'] = function (id) {
         return exports.ELEMENTS_.filter(function (val) { return val.id == id; })[0];
     };
