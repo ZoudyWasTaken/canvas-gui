@@ -176,6 +176,8 @@ define("index", ["require", "exports", "Elements/Button", "Elements/Text"], func
         };
         return _a;
     }
+    window['registerElement'] = registerElement;
+    window['context'] = context;
     exports.ELEMENTS_ = [
         registerElement(Button_1["default"], "Button #1", 100, 75, 125, 25),
         registerElement(Button_1["default"], "Pizza time!", 100, 75 * 2, 125, 25),
