@@ -1,8 +1,9 @@
-import draw_text from "Utils/text";
+import TextUtil from "Utils/TextUtil";
+import { Position } from "Utils/Util";
 import Element from "./Element";
 export default class Text extends Element {
     text: string;
-    constructor(context: CanvasRenderingContext2D, text: string, x: number, y: number) {
+    constructor(context: CanvasRenderingContext2D, text: string, pos: Position) {
         function getWidth(): number {
             return (context.canvas.width / 16) - 12 * text.length;
         }
@@ -11,16 +12,21 @@ export default class Text extends Element {
             return (context.canvas.height / 16) - 12;
         }
 
-        super(context, x, y, getWidth(), getHeight());
+        super(context, {
+            width: getWidth(), 
+            height: getHeight() 
+        }, pos);
 
         this.text = text;
-        this.render(context);
+        this.render(context, pos);
     }
 
-    render(context: CanvasRenderingContext2D) {
+    render(context: CanvasRenderingContext2D, pos: Position | null): void {
+        if (pos == null)
+            pos = this.pos;
         const prev_fillstyle = context.fillStyle;
 
-        draw_text(context, this.text, this.x, this.y, (context.canvas.width / 16));
+        TextUtil.draw_text(context, this.text, pos);
 
         context.fillStyle = prev_fillstyle;
         return;
