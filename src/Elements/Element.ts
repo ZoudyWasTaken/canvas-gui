@@ -1,9 +1,10 @@
-export default class Element {
-    id: number = Math.floor(Math.random() * 420);
-    x: number;
-    y: number;
-    width: number;
-    height: number;
+import EventListenerUtil from "Utils/EventListenerUtil";
+import { Position, Rect } from "Utils/Util";
+
+export default class Element extends EventListenerUtil {
+    id: string;
+    pos: Position;
+    size: Rect;
 
     onclick: Function | null = null;
     onmouseenter: Function | null = null;
@@ -12,22 +13,23 @@ export default class Element {
     onmouseup: Function | null = null;
     onmousedown: Function | null = null;
 
-    constructor(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    constructor(context: CanvasRenderingContext2D, size: Rect = { width: 0, height: 0 }, pos: Position = { x: 0, y: 0 }) {
+        super();
+        this.size = size;
+        this.pos = pos;
 
-        ["click", "mouseup", "mousedown"].forEach((key: string) => {
+        ["click", "mouseup", "mousedown", "mouseenter", "mouseleave", "mouseover"].forEach((key: string) => {
             context.canvas.addEventListener(key, (e: MouseEvent) => {
                 var func_ = this["on" + key];
-                if (this.inside(this, e.clientX, e.clientY) && func_ && (func_ instanceof Function)) 
+                if (this.inside(this, { x: e.clientX, y: e.clientY }) && func_ && (func_ instanceof Function)) {
+                    this.emit(key, e);
                     func_(e);
+                }
             });
         });
     }
 
-    render(context: CanvasRenderingContext2D | null): void { 
+    render(context: CanvasRenderingContext2D | null, pos: Position): void { 
         return;
     }
 
@@ -35,9 +37,10 @@ export default class Element {
         return;
     }
 
-    inside(object: Element, x: number, y: number): boolean {
-        if ((x >= object.x) && (x <= object.x + object.width) && (y >= object.y) && (y <= object.y + object.height))
-            return true;
-        return false;
+    inside(object: Element, pos: Position): boolean {
+        return (pos.x >= object.pos.x) && 
+               (pos.x <= object.pos.x + object.size.width) && 
+               (pos.y >= object.pos.y) && 
+               (pos.y <= object.pos.y + object.size.height);
     }
 }
