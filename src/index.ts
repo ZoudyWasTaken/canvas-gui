@@ -36,9 +36,9 @@ function registerElement(func, ...args) {
 }
 
 export const ELEMENTS_ = [
-    registerElement(Button, "Button #1", { width: 100, height: 75 }, { x: 125, y: 25 }),
+    registerElement(Button, "Button #1", { width: 125, height: 25 }, { x: 125, y: 25 }),
 
-    registerElement(Button, "Pizza time!", { width: 100, height: 75 * 2 }, { x: 125, y: 250 }),
+    registerElement(Button, "Pizza time!", { width: 125, height: 25 }, { x: 125, y: 25 * 4 }),
 
     registerElement(Text, "TEXT", { x: 500, y: 500 })
 ]
