@@ -1,12 +1,14 @@
+import Container from "Elements/Container";
 import Button from "./Elements/Button";
 import Text from "./Elements/Text";
 
 const context: CanvasRenderingContext2D | null = (<HTMLCanvasElement>document.getElementById('painting')).getContext('2d');
 if (context == null) throw new Error('Found canvas but failed to get context "2d" ;(');
 
-var width: number = context.canvas.width;
-var height: number = context.canvas.height;
+var cwidth: number = context.canvas.width;
+var cheight: number = context.canvas.height;
 var fps: number = 0;
+var MAX_FPS: number = 60;
 var times: Array<number> = [];
 var running: boolean = true;
 var show_fps: boolean = true;
@@ -16,7 +18,7 @@ function getFPS(): number {
     while (times.length > 0 && times[0] <= now - 1000) times.shift();
     times.push(now);
     fps = times.length;
-    return fps;
+    return fps > MAX_FPS ? MAX_FPS : fps;
 }
 
 function registerElement(func, ...args) {
@@ -34,36 +36,35 @@ function registerElement(func, ...args) {
 }
 
 export const ELEMENTS_ = [
-    registerElement(Button, "Button #1", 100, 75, 125, 25),
-    registerElement(Button, "Pizza time!", 100, 75 * 2, 125, 25),
-    registerElement(Text, "TEXT", 500, 500)
+    registerElement(Button, "Button #1", { width: 100, height: 75 }, { x: 125, y: 25 }),
+
+    registerElement(Button, "Pizza time!", { width: 100, height: 75 * 2 }, { x: 125, y: 250 }),
+
+    registerElement(Text, "TEXT", { x: 500, y: 500 })
 ]
 
-window['getButtonById'] = function(id: number) {
-    return ELEMENTS_.filter((val) => val.id == id)[0];
-}
+window['ELEMENTS_'] = ELEMENTS_;
 
-console.log(ELEMENTS_)
+const cont = new Container(context, { x: 40, y: 40 });
+for (var i = 0; i < ELEMENTS_.length; ++i)
+    cont.append(ELEMENTS_[i]);
 
-var fps_c: Text = registerElement(Text, "", 10, 20);
+console.log(ELEMENTS_);
+
+var fps_c: Text = registerElement(Text, "", { x: 10, y: 20 });
 function main(): void {
-    context.fillRect(0, 0, width, height);
+    context.fillRect(0, 0, cwidth, cheight);
     
-    fps_c.text = `${getFPS()} fps`;
-    show_fps ? fps_c.render(context) : null;
+    fps_c.text = `${getFPS()}/${MAX_FPS} fps`;
+    show_fps ? fps_c.render(context, null) : null;
 
-    ELEMENTS_.forEach((e) => {            
-        try {
-            e.render(context);
-            e.update();
-        } catch(err) {
-            var _el_name =  e.toString().split(" ")[1].split("]")[0];
-            console.log("Unable to render element '" + _el_name + "'. \n", err);
-        }
-    });
-
-    if (running) 
-        requestAnimationFrame(main);
+    cont.render(context, null);
+    cont.update();
 }
 
-main();
+setInterval(function() {
+    if (running)
+        main();
+}, getFPS());
+
+//main();
